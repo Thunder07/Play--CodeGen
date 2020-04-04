@@ -361,6 +361,7 @@ public:
 
 	//AVX
 	void									VmovdVo(XMMREGISTER, const CAddress&);
+	void									VmovdVo(const CAddress&, XMMREGISTER);
 
 	void									VmovssEd(XMMREGISTER, const CAddress&);
 	void									VmovssEd(const CAddress&, XMMREGISTER);
@@ -371,6 +372,8 @@ public:
 	void									VdivssEd(XMMREGISTER, XMMREGISTER, const CAddress&);
 	void									VmaxssEd(XMMREGISTER, XMMREGISTER, const CAddress&);
 	void									VminssEd(XMMREGISTER, XMMREGISTER, const CAddress&);
+	
+	void									VcmpssEd(XMMREGISTER, XMMREGISTER, const CAddress&, SSE_CMP_TYPE);
 
 	void									VsqrtssEd(XMMREGISTER, XMMREGISTER, const CAddress&);
 
