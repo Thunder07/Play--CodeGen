@@ -1,7 +1,6 @@
 #include <assert.h>
 #include <vector>
 #include <algorithm>
-#include <chrono>
 #include "Jitter.h"
 #include "BitManip.h"
 
@@ -156,13 +155,6 @@ StatementList CJitter::CollapseVersionedStatementList(const VERSIONED_STATEMENT_
 
 void CJitter::Compile()
 {
-	static int count_blocks = 0;
-	auto size = m_basicBlocks.size();
-	static auto exec_start = std::chrono::system_clock::now();
-	if(count_blocks == 100)
-		exec_start = std::chrono::system_clock::now();
-
-	auto start = std::chrono::system_clock::now();
 	while(1)
 	{
 		for(auto& basicBlock : m_basicBlocks)
@@ -199,17 +191,6 @@ void CJitter::Compile()
 
 		if(!dirty) break;
 	}
-	auto end = std::chrono::system_clock::now();
-	auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
-	fprintf(stdout, "%08x - %04lu - %08lld ns\n", count_blocks, size, elapsed.count());
-	++count_blocks;
-	if(count_blocks == 10000)
-	{
-		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - exec_start);
-		fprintf(stdout, "%08lld milliseconds\n", elapsed.count());
-		exit(0);
-	}
-
 
 	unsigned int stackSize = 0;
 
