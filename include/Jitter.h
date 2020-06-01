@@ -292,6 +292,7 @@ namespace Jitter
 
 		void							Compile();
 
+		bool							VariableFolding(StatementList&);
 		bool							ConstantFolding(StatementList&);
 		bool							ConstantPropagation(StatementList&);
 		bool							CopyPropagation(StatementList&);

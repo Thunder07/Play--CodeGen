@@ -170,6 +170,7 @@ void CJitter::Compile()
 				while(1)
 				{
 					bool dirty = false;
+					dirty |= VariableFolding(versionedStatements.statements);
 					dirty |= ConstantPropagation(versionedStatements.statements);
 					dirty |= ConstantFolding(versionedStatements.statements);
 					dirty |= CopyPropagation(versionedStatements.statements);
@@ -496,6 +497,37 @@ bool CJitter::FoldConstantOperation(STATEMENT& statement)
 			statement.src2.reset();
 			changed = true;
 		}
+		else if(src2cst && src2cst->m_valueLow == 0)
+		{
+			static int i = 0;
+			fprintf(stderr, "%03d MUL0: %03d\n", ++i, statement.op);
+
+			statement.op = OP_MOV;
+			statement.src1 = MakeSymbolRef(MakeConstant64(0));
+			statement.src2.reset();
+			changed = true;
+		}
+		else if(src2cst && src2cst->m_valueLow == 1)
+		{
+			static int i = 0;
+			fprintf(stderr, "%03d MUL1: %03d\n", ++i, statement.op);
+
+			statement.op = OP_MOV;
+			statement.src2.reset();
+			changed = true;
+		}
+		// else if(src2cst && IsPowerOfTwo(src2cst->m_valueLow))
+		// {
+		// 	{StatementList list = {statement};
+		// 	DumpStatementList(list);}
+		// 	static int i = 0;
+		// 	fprintf(stderr, "%03d MULSL: %03d\n", ++i, statement.op);
+		// 	statement.op = OP_SLL64;
+		// 	src2cst->m_valueLow = GetPowerOf2(src2cst->m_valueLow);
+		// 	changed = true;
+		// 	{StatementList list = {statement};
+		// 	DumpStatementList(list);}
+		// }
 	}
 	else if(statement.op == OP_MULS)
 	{
@@ -824,6 +856,155 @@ bool CJitter::FoldConstant12832Operation(STATEMENT& statement)
 		}
 	}
 
+	return changed;
+}
+
+bool CJitter::VariableFolding(StatementList& statements)
+{
+	auto changed = false;
+	for(auto& statement : statements)
+	{
+		if(!statement.src2)
+			continue;
+		bool src1cst = statement.src1.get()->GetSymbol().get()->IsConstant();
+		bool src2cst = statement.src2.get()->GetSymbol().get()->IsConstant();
+
+		//Nothing we can do
+		if(src1cst || src2cst || !statement.src1.get()->Equals(statement.src2.get())) continue;
+
+		switch(statement.op)
+		{
+			case OP_AND:
+			case OP_AND64:
+			case OP_OR:
+			case OP_MD_OR:
+			case OP_MD_AND:
+			{
+				static int i = 0;
+				fprintf(stderr, "%03d ANDOR: %03d\n", ++i, statement.op);
+				statement.op = OP_MOV;
+				statement.src2.reset();
+				changed = true;
+			}
+			break;
+			case OP_SUB:
+			case OP_SUB64:
+			case OP_FP_SUB:
+			{
+				// if(statement.src1.get()->Equals(statement.src2.get()))
+				{
+					static int i = 0;
+					fprintf(stderr, "%03d SUB: %03d\n", ++i, statement.op);
+					SymbolPtr res;
+					if(statement.op == OP_SUB)
+						res = MakeSymbol(SYM_CONSTANT, 0);
+					else
+						res = MakeConstant64(0);
+					
+					statement.op = OP_MOV;
+					statement.src1 = MakeSymbolRef(res);
+					statement.src2.reset();
+					changed = true;
+				}
+			}
+			break;
+			case OP_MD_CMPEQ_B:
+			case OP_MD_CMPEQ_H:
+			case OP_MD_CMPEQ_W:
+			{
+				// if(statement.src1.get()->Equals(statement.src2.get()))
+				{
+				SymbolPtr result;
+				switch(statement.jmpCondition)
+				{
+					case CONDITION_EQ:
+					case CONDITION_LE:
+					case CONDITION_GE:
+						result = MakeSymbol(SYM_CONSTANT, 0xFFFFFFFF);
+					break;
+					default:
+						result = MakeSymbol(SYM_CONSTANT, 0);
+					break;
+
+				}
+				static int i = 0;
+				fprintf(stderr, "%03d MD_CMP: %03d\n", ++i, statement.op);
+				statement.op = OP_MD_EXPAND;
+				statement.src1 = MakeSymbolRef(result);
+				statement.src2.reset();
+				changed = true;
+				}
+			}
+			break;
+			case OP_CMP:
+			case OP_CMP64:
+			case OP_FP_CMP:
+			{
+				// if(statement.src1.get()->Equals(statement.src2.get()))
+				{
+				SymbolPtr result;
+				switch(statement.jmpCondition)
+				{
+					case CONDITION_EQ:
+					case CONDITION_LE:
+					case CONDITION_GE:
+						result = MakeSymbol(SYM_CONSTANT, 1);
+					break;
+					default:
+						result = MakeSymbol(SYM_CONSTANT, 0);
+					break;
+
+				}
+				static int i = 0;
+				fprintf(stderr, "%03d CMP: %03d\n", ++i, statement.op);
+				statement.op = OP_MOV;
+				statement.src1 = MakeSymbolRef(result);
+				statement.src2.reset();
+				changed = true;
+				}
+			}
+			break;
+			case OP_DIV:
+			case OP_DIVS:
+			case OP_MD_DIV_S:
+			case OP_FP_DIV:
+			{
+				// if(statement.src1.get()->Equals(statement.src2.get()))
+				{
+					static int i = 0;
+					fprintf(stderr, "%03d DIV: %03d\n", ++i, statement.op);
+					statement.op = OP_MOV;
+					statement.src1 = MakeSymbolRef(MakeConstant64(1));
+					statement.src2.reset();
+					changed = true;
+				}
+			}
+			break;
+			default:
+			{
+				StatementList list = {statement};
+				DumpStatementList(list);
+			}
+			break;
+			case OP_ADD:
+			case OP_ADD64:
+			case OP_MUL:
+			case OP_MULS:
+			case OP_MD_ADD_S:
+			case OP_MD_ADD_W:
+			case OP_MD_ADDUS_W:
+			case OP_MD_MUL_S:
+			case OP_FP_ADD:
+			case OP_FP_MUL:
+			case OP_MERGETO256:
+
+			// TODO checkout
+			case OP_MD_UNPACK_LOWER_HW:
+			case OP_MD_UNPACK_LOWER_WD:
+			case OP_MD_UNPACK_LOWER_BH:
+			break;
+		}
+	}
 	return changed;
 }
 

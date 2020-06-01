@@ -133,6 +133,46 @@ void CCodeGen_x86_64::Emit_Alu64_MemCstMem(const STATEMENT& statement)
 //-------------------------------------------------------------------
 
 template <typename SHIFTOP>
+void CCodeGen_x86_64::Emit_Shift64_TmpRegCst(const STATEMENT& statement)
+{
+	CSymbol* dst = statement.dst->GetSymbol().get();
+	CSymbol* src1 = statement.src1->GetSymbol().get();
+	CSymbol* src2 = statement.src2->GetSymbol().get();
+
+	assert(dst->m_type  == SYM_TEMPORARY64);
+	assert(src1->m_type == MATCH_REGISTER);
+	assert(src2->m_type == SYM_CONSTANT);
+
+	CX86Assembler::REGISTER tmpReg = m_registers[src1->m_valueLow];
+	CX86Assembler::REGISTER shiftReg = CX86Assembler::rCX;
+
+	m_assembler.MovEq(tmpReg, MakeRelativeSymbolAddress(src1));
+	m_assembler.MovIq(shiftReg, src2->m_valueLow);
+	((m_assembler).*(SHIFTOP::OpVar()))(CX86Assembler::MakeRegisterAddress(tmpReg));
+	m_assembler.MovGq(MakeMemory64SymbolAddress(dst), tmpReg);
+}
+
+template <typename SHIFTOP>
+void CCodeGen_x86_64::Emit_Shift64_TmpRelCst(const STATEMENT& statement)
+{
+	CSymbol* dst = statement.dst->GetSymbol().get();
+	CSymbol* src1 = statement.src1->GetSymbol().get();
+	CSymbol* src2 = statement.src2->GetSymbol().get();
+
+	assert(dst->m_type  == SYM_TEMPORARY64);
+	assert(src1->m_type == SYM_RELATIVE);
+	assert(src2->m_type == SYM_CONSTANT);
+
+	CX86Assembler::REGISTER tmpReg = CX86Assembler::rAX;;
+	CX86Assembler::REGISTER shiftReg = CX86Assembler::rCX;
+
+	m_assembler.MovEq(tmpReg, MakeRelativeSymbolAddress(src1));
+	m_assembler.MovIq(shiftReg, src2->m_valueLow);
+	((m_assembler).*(SHIFTOP::OpVar()))(CX86Assembler::MakeRegisterAddress(tmpReg));
+	m_assembler.MovGq(MakeMemory64SymbolAddress(dst), tmpReg);
+}
+
+template <typename SHIFTOP>
 void CCodeGen_x86_64::Emit_Shift64_RelRelReg(const STATEMENT& statement)
 {
 	CSymbol* dst = statement.dst->GetSymbol().get();
@@ -229,6 +269,9 @@ CCodeGen_x86_64::CONSTMATCHER CCodeGen_x86_64::g_constMatchers[] =
 	ALU64_CONST_MATCHERS(OP_AND64, ALUOP64_AND)
 
 	SHIFT64_CONST_MATCHERS(OP_SLL64, SHIFTOP64_SLL)
+	{ OP_SLL64, MATCH_TEMPORARY64, MATCH_REGISTER, MATCH_CONSTANT, MATCH_NIL, &CCodeGen_x86_64::Emit_Shift64_TmpRegCst<SHIFTOP64_SLL> },
+	{ OP_SLL64, MATCH_TEMPORARY64, MATCH_RELATIVE, MATCH_CONSTANT, MATCH_NIL, &CCodeGen_x86_64::Emit_Shift64_TmpRelCst<SHIFTOP64_SLL> },
+
 	SHIFT64_CONST_MATCHERS(OP_SRL64, SHIFTOP64_SRL)
 	SHIFT64_CONST_MATCHERS(OP_SRA64, SHIFTOP64_SRA)
 

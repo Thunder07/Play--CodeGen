@@ -115,6 +115,8 @@ namespace Jitter
 		template <typename> void			Emit_Alu64_MemCstMem(const STATEMENT&);
 
 		//SHIFT64
+		template <typename> void			Emit_Shift64_TmpRegCst(const STATEMENT&);
+		template <typename> void			Emit_Shift64_TmpRelCst(const STATEMENT&);
 		template <typename> void			Emit_Shift64_RelRelReg(const STATEMENT&);
 		template <typename> void			Emit_Shift64_RelRelMem(const STATEMENT&);
 		template <typename> void			Emit_Shift64_RelRelCst(const STATEMENT&);

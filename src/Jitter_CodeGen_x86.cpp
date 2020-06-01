@@ -226,6 +226,7 @@ void CCodeGen_x86::GenerateCode(const StatementList& statements, unsigned int st
 			assert(found);
 			if(!found)
 			{
+				DumpStatementList(statements);
 				throw std::exception();
 			}
 		}
