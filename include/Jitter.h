@@ -154,6 +154,7 @@ namespace Jitter
 		void							FP_Max();
 		void							FP_Min();
 		void							FP_Mul();
+		void							FP_MulAdd();
 		void							FP_Div();
 		void							FP_Cmp(CONDITION);
 		void							FP_Neg();
@@ -287,6 +288,7 @@ namespace Jitter
 
 		void							InsertUnaryStatement(Jitter::OPERATION);
 		void							InsertBinaryStatement(Jitter::OPERATION);
+		void							InsertTernaryStatement(Jitter::OPERATION);
 		void							InsertUnaryMdStatement(Jitter::OPERATION);
 		void							InsertBinaryMdStatement(Jitter::OPERATION);
 
