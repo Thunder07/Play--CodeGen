@@ -226,7 +226,9 @@ void CCodeGen_x86::GenerateCode(const StatementList& statements, unsigned int st
 			assert(found);
 			if(!found)
 			{
-				DumpStatementList(statements);
+				// DumpStatementList(statements);
+				StatementList list = {statement};
+				DumpStatementList(list);
 				throw std::exception();
 			}
 		}
@@ -1336,6 +1338,41 @@ void CCodeGen_x86::CommitSymbolRegisterMdAvx(CSymbol* symbol, CX86Assembler::XMM
 	case SYM_TEMPORARY128:
 	case SYM_RELATIVE128:
 		m_assembler.VmovapsVo(MakeMemory128SymbolAddress(symbol), usedRegister);
+		break;
+	default:
+		throw std::runtime_error("Invalid symbol type.");
+		break;
+	}
+}
+
+CX86Assembler::XMMREGISTER CCodeGen_x86::PrepareSymbolRegisterUseFpuAvx(CSymbol* symbol, CX86Assembler::XMMREGISTER preferedRegister)
+{
+	switch(symbol->m_type)
+	{
+	case SYM_REGISTER128:
+		return m_mdRegisters[symbol->m_valueLow];
+		break;
+	case SYM_TEMPORARY128:
+	case SYM_RELATIVE128:
+		m_assembler.VmovssEd(preferedRegister, MakeMemoryFpSingleSymbolAddress(symbol));
+		return preferedRegister;
+		break;
+	default:
+		throw std::runtime_error("Invalid symbol type.");
+		break;
+	}
+}
+
+void CCodeGen_x86::CommitSymbolRegisterFpuAvx(CSymbol* symbol, CX86Assembler::XMMREGISTER usedRegister)
+{
+	switch(symbol->m_type)
+	{
+	case SYM_REGISTER128:
+		assert(usedRegister == m_mdRegisters[symbol->m_valueLow]);
+		break;
+	case SYM_TEMPORARY128:
+	case SYM_RELATIVE128:
+		m_assembler.VmovssEd(MakeMemory128SymbolAddress(symbol), usedRegister);
 		break;
 	default:
 		throw std::runtime_error("Invalid symbol type.");

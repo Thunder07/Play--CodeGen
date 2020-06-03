@@ -3,6 +3,43 @@
 using namespace Jitter;
 
 template <typename MDOP>
+void CCodeGen_x86::Emit_Md_Avx_VarVarVarVar(const STATEMENT& statement)
+{
+	auto dst = statement.dst->GetSymbol().get();
+	auto src1 = statement.src1->GetSymbol().get();
+	auto src2 = statement.src2->GetSymbol().get();
+	auto src3 = statement.src3->GetSymbol().get();
+
+	auto tempRegister = CX86Assembler::xMM3;
+	auto dstRegister = PrepareSymbolRegisterDefMd(dst, CX86Assembler::xMM0);
+	auto src1Register = PrepareSymbolRegisterUseMdAvx(src1, CX86Assembler::xMM1);
+	auto src2Register = PrepareSymbolRegisterUseMdAvx(src2, CX86Assembler::xMM2);
+
+#if 0
+	if(dstRegister != src1Register)
+	{
+		m_assembler.VmovapsVo(tempRegister, MakeVariable128SymbolAddress(src1));
+	}
+#endif
+	((m_assembler).*(MDOP::OpVoAvx()))(src1Register, src2Register, MakeVariable128SymbolAddress(src3));
+
+#if 0
+	// hack: reg optimisation doesnt take overrding values into account, so we need to copy and restore
+	if(dstRegister != src1Register)
+	{
+		m_assembler.VmovapsVo(dstRegister, MakeVariable128SymbolAddress(src1));
+		m_assembler.VmovapsVo(src1Register, CX86Assembler::MakeXmmRegisterAddress(tempRegister));
+	}
+	else
+#else
+	{
+		CommitSymbolRegisterMdAvx(dst, src1Register);
+	}
+#endif
+	
+}
+
+template <typename MDOP>
 void CCodeGen_x86::Emit_Md_Avx_VarVar(const STATEMENT& statement)
 {
 	auto dst = statement.dst->GetSymbol().get();
@@ -608,6 +645,10 @@ CCodeGen_x86::CONSTMATCHER CCodeGen_x86::g_mdAvxConstMatchers[] =
 	{ OP_MD_SUB_S, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_NIL, &CCodeGen_x86::Emit_Md_Avx_VarVarVar<MDOP_SUBS> },
 	{ OP_MD_MUL_S, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_NIL, &CCodeGen_x86::Emit_Md_Avx_VarVarVar<MDOP_MULS> },
 	{ OP_MD_DIV_S, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_NIL, &CCodeGen_x86::Emit_Md_Avx_VarVarVar<MDOP_DIVS> },
+
+
+	{OP_MD_MULADD, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_VARIABLE128, &CCodeGen_x86::Emit_Md_Avx_VarVarVarVar<MDOP_MULADD213>},
+	{OP_MD_MULSUB, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_VARIABLE128, &CCodeGen_x86::Emit_Md_Avx_VarVarVarVar<MDOP_MULSUB213>},
 
 	{ OP_MD_ABS_S, MATCH_VARIABLE128, MATCH_VARIABLE128, MATCH_NIL, MATCH_NIL, &CCodeGen_x86::Emit_Md_Avx_Abs_VarVar },
 

@@ -463,6 +463,8 @@ public:
 	void									VcmppsVo(XMMREGISTER, XMMREGISTER, const CAddress&, SSE_CMP_TYPE);
 
 	void									VblendpsVo(XMMREGISTER, XMMREGISTER, const CAddress&, uint8);
+	void									Vfmadd213ssVo(XMMREGISTER, XMMREGISTER, const CAddress&);
+	void									Vfmsub213ssVo(XMMREGISTER, XMMREGISTER, const CAddress&);
 	void									Vfmadd213psVo(XMMREGISTER, XMMREGISTER, const CAddress&);
 	void									Vfmsub213psVo(XMMREGISTER, XMMREGISTER, const CAddress&);
 
@@ -557,7 +559,7 @@ private:
 	typedef std::vector<uint8> ByteArray;
 
 	void									WriteRexByte(bool, const CAddress&);
-	void									WriteRexByte(bool, const CAddress&, REGISTER&, bool = false);
+	void									WriteRexByte(bool, const CAddress&, REGISTER&);
 	void									WriteVex(VEX_OPCODE_MAP, XMMREGISTER&, XMMREGISTER, const CAddress&);
 	void									WriteEbOp_0F(uint8, uint8, const CAddress&);
 	void									WriteEbGbOp(uint8, bool, const CAddress&, REGISTER);

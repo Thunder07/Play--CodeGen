@@ -232,6 +232,8 @@ namespace Jitter
 		void							MD_UnpackUpperHW();
 		void							MD_UnpackUpperWD();
 		void							MD_Xor();
+		void							MD_MulAdd();
+		void							MD_MulSub();
 
 		CCodeGen*						GetCodeGen();
 

@@ -165,6 +165,7 @@ namespace Jitter
 		bool IsRelative() const
 		{
 			return 
+				(m_type == SYM_TEMPORARY128) || // hack to avoid optimisation, doesnt wokr well with FMA3, might need FMA4
 				(m_type == SYM_RELATIVE) || 
 				(m_type == SYM_RELATIVE64) || 
 				(m_type == SYM_RELATIVE128) || 

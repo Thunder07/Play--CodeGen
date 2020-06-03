@@ -1010,6 +1010,7 @@ void CJitter::FP_MulAdd()
 
 	STATEMENT statement;
 	statement.op	= OP_FP_MULADD;
+	// Pulling in reverse, this allows us to keep current of FP_Mul() + _Add() merger
 	statement.src1	= MakeSymbolRef(m_shadow.Pull());
 	statement.src2	= MakeSymbolRef(m_shadow.Pull());
 	statement.src3	= MakeSymbolRef(m_shadow.Pull());
@@ -1025,6 +1026,7 @@ void CJitter::FP_MulSub()
 
 	STATEMENT statement;
 	statement.op	= OP_FP_MULSUB;
+	// Pulling in reverse, this allows us to keep current of FP_Mul() + _Sub() merger
 	statement.src1	= MakeSymbolRef(m_shadow.Pull());
 	statement.src2	= MakeSymbolRef(m_shadow.Pull());
 	statement.src3	= MakeSymbolRef(m_shadow.Pull());
@@ -1607,6 +1609,36 @@ void CJitter::MD_MinS()
 void CJitter::MD_MaxS()
 {
 	InsertBinaryMdStatement(OP_MD_MAX_S);
+}
+
+void CJitter::MD_MulAdd()
+{
+	SymbolPtr tempSym = MakeSymbol(SYM_TEMPORARY128, m_nextTemporary++);
+
+	STATEMENT statement;
+	statement.op	= OP_MD_MULADD;
+	statement.src1	= MakeSymbolRef(m_shadow.Pull());
+	statement.src2	= MakeSymbolRef(m_shadow.Pull());
+	statement.src3	= MakeSymbolRef(m_shadow.Pull());
+	statement.dst	= MakeSymbolRef(tempSym);
+	InsertStatement(statement);
+
+	m_shadow.Push(tempSym);
+}
+
+void CJitter::MD_MulSub()
+{
+	SymbolPtr tempSym = MakeSymbol(SYM_TEMPORARY128, m_nextTemporary++);
+
+	STATEMENT statement;
+	statement.op	= OP_MD_MULSUB;
+	statement.src1	= MakeSymbolRef(m_shadow.Pull());
+	statement.src2	= MakeSymbolRef(m_shadow.Pull());
+	statement.src3	= MakeSymbolRef(m_shadow.Pull());
+	statement.dst	= MakeSymbolRef(tempSym);
+	InsertStatement(statement);
+
+	m_shadow.Push(tempSym);
 }
 
 void CJitter::MD_MakeSignZero()

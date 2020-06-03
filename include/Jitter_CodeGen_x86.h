@@ -109,12 +109,12 @@ namespace Jitter
 
 		struct FPUOP_MULADD213 : public FPUOP_BASE
 		{
-			static OpEdAvxType OpEdAvx() { return &CX86Assembler::Vfmadd213psVo; }
+			static OpEdAvxType OpEdAvx() { return &CX86Assembler::Vfmadd213ssVo; }
 		};
 
 		struct FPUOP_MULSUB213 : public FPUOP_BASE
 		{
-			static OpEdAvxType OpEdAvx() { return &CX86Assembler::Vfmsub213psVo; }
+			static OpEdAvxType OpEdAvx() { return &CX86Assembler::Vfmsub213ssVo; }
 		};
 
 		struct FPUOP_DIV : public FPUOP_BASE
@@ -398,6 +398,16 @@ namespace Jitter
 		{
 			static OpVoType OpVo() { return &CX86Assembler::Cvtdq2psVo; }
 			static OpVoType OpVoAvx() { return &CX86Assembler::Vcvtdq2psVo; }
+		};
+
+		struct MDOP_MULADD213 : public MDOP_BASE
+		{
+			static OpVoAvxType OpVoAvx() { return &CX86Assembler::Vfmadd213psVo; }
+		};
+
+		struct MDOP_MULSUB213 : public MDOP_BASE
+		{
+			static OpVoAvxType OpVoAvx() { return &CX86Assembler::Vfmsub213psVo; }
 		};
 
 		//MDOP SHIFT -----------------------------------------------------
@@ -738,6 +748,11 @@ namespace Jitter
 		void						Emit_Fp_Avx_Rsqrt_MemMem(const STATEMENT&);
 		void						Emit_Fp_Avx_Rcpl_MemMem(const STATEMENT&);
 		void						Emit_Fp_Avx_Mov_RelSRelI32(const STATEMENT&);
+
+		void						Emit_Fp_Avx_Mov_RelSReg(const STATEMENT&);
+		void						Emit_Fp_Avx_Mov_RegSRelS(const STATEMENT&);
+		void						Emit_Fp_Avx_Mov_RegSRelI32(const STATEMENT&);
+
 		void						Emit_Fp_Avx_ToIntTrunc_RelRel(const STATEMENT&);
 
 		//MDOP AVX
@@ -746,6 +761,7 @@ namespace Jitter
 		template <typename> void	Emit_Md_Avx_VarVarVarRev(const STATEMENT&);
 		template <typename, uint8> void
 									Emit_Md_Avx_Shift_VarVarCst(const STATEMENT&);
+		template <typename> void	Emit_Md_Avx_VarVarVarVar(const STATEMENT&);
 		void						Emit_Md_Avx_Mov_RegVar(const STATEMENT&);
 		void						Emit_Md_Avx_Mov_MemReg(const STATEMENT&);
 		void						Emit_Md_Avx_Mov_MemMem(const STATEMENT&);
@@ -781,6 +797,8 @@ namespace Jitter
 		CX86Assembler::XMMREGISTER	PrepareSymbolRegisterDefMd(CSymbol*, CX86Assembler::XMMREGISTER);
 		CX86Assembler::XMMREGISTER	PrepareSymbolRegisterUseMdAvx(CSymbol*, CX86Assembler::XMMREGISTER);
 		void						CommitSymbolRegisterMdAvx(CSymbol*, CX86Assembler::XMMREGISTER);
+		CX86Assembler::XMMREGISTER	PrepareSymbolRegisterUseFpuAvx(CSymbol*, CX86Assembler::XMMREGISTER);
+		void						CommitSymbolRegisterFpuAvx(CSymbol*, CAArch64Assembler::XMMREGISTER);
 
 		virtual CX86Assembler::REGISTER PrepareRefSymbolRegisterUse(CSymbol*, CX86Assembler::REGISTER) = 0;
 
