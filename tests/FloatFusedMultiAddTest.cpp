@@ -69,7 +69,7 @@ void CFloatFusedMultiAddTest::Run()
 	TEST_VERIFY(m_context.res2 == 20.0f);
 	TEST_VERIFY(m_context.res3 == 28.0f);
 
-	TEST_VERIFY(m_context.res4 == 6.0f);
-	TEST_VERIFY(m_context.res5 == -12.0f);
-	TEST_VERIFY(m_context.res6 == 36.0f);
+	TEST_VERIFY(m_context.res4 == -6.0f);
+	TEST_VERIFY(m_context.res5 == 12.0f);
+	TEST_VERIFY(m_context.res6 == -36.0f);
 }

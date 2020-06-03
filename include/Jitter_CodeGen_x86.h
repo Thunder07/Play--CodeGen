@@ -114,7 +114,7 @@ namespace Jitter
 
 		struct FPUOP_MULSUB213 : public FPUOP_BASE
 		{
-			static OpEdAvxType OpEdAvx() { return &CX86Assembler::Vfmsub213ssVo; }
+			static OpEdAvxType OpEdAvx() { return &CX86Assembler::Vfnmadd213ssVo; }
 		};
 
 		struct FPUOP_DIV : public FPUOP_BASE
@@ -407,7 +407,7 @@ namespace Jitter
 
 		struct MDOP_MULSUB213 : public MDOP_BASE
 		{
-			static OpVoAvxType OpVoAvx() { return &CX86Assembler::Vfmsub213psVo; }
+			static OpVoAvxType OpVoAvx() { return &CX86Assembler::Vfnmadd213psVo; }
 		};
 
 		//MDOP SHIFT -----------------------------------------------------

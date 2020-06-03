@@ -458,9 +458,9 @@ void CX86Assembler::Vfmadd213ssVo(XMMREGISTER dst, const XMMREGISTER src1, const
 	WriteVexVoOp(VEX_OPCODE_MAP_66_38, 0xA9, dst, src1, src2);
 }
 
-void CX86Assembler::Vfmsub213ssVo(XMMREGISTER dst, const XMMREGISTER src1, const CAddress& src2)
+void CX86Assembler::Vfnmadd213ssVo(XMMREGISTER dst, const XMMREGISTER src1, const CAddress& src2)
 {
-	WriteVexVoOp(VEX_OPCODE_MAP_66_38, 0xAB, dst, src1, src2);
+	WriteVexVoOp(VEX_OPCODE_MAP_66_38, 0xAD, dst, src1, src2);
 }
 
 void CX86Assembler::Vfmadd213psVo(XMMREGISTER dst, const XMMREGISTER src1, const CAddress& src2)
@@ -468,9 +468,9 @@ void CX86Assembler::Vfmadd213psVo(XMMREGISTER dst, const XMMREGISTER src1, const
 	WriteVexVoOp(VEX_OPCODE_MAP_66_38, 0xA8, dst, src1, src2);
 }
 
-void CX86Assembler::Vfmsub213psVo(XMMREGISTER dst, const XMMREGISTER src1, const CAddress& src2)
+void CX86Assembler::Vfnmadd213psVo(XMMREGISTER dst, const XMMREGISTER src1, const CAddress& src2)
 {
-	WriteVexVoOp(VEX_OPCODE_MAP_66_38, 0xAA, dst, src1, src2);
+	WriteVexVoOp(VEX_OPCODE_MAP_66_38, 0xAC, dst, src1, src2);
 }
 
 void CX86Assembler::VshufpsVo(XMMREGISTER dst, XMMREGISTER src1, const CAddress& src2, uint8 shuffleByte)
