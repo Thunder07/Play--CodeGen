@@ -741,8 +741,13 @@ namespace Jitter
 
 		//FPUOP AVX
 		template <typename> void	Emit_Fpu_Avx_MemMem(const STATEMENT&);
-		template <typename> void	Emit_Fpu_Avx_MemMemMem(const STATEMENT&);
+		template <typename> void	Emit_Fpu_Avx_VarVarVar(const STATEMENT&);
 		template <typename> void	Emit_Fpu_Avx_MemMemMemMem(const STATEMENT&);
+
+		void						Emit_Fp_Avx_Neg_VarVar(const STATEMENT&);
+		void						Emit_Fp_Avx_Abs_VarVar(const STATEMENT&);
+		void						Emit_Fp_Avx_Mov_Reg32RelI32(const STATEMENT&);
+		void						Emit_Fp_Avx_Mov_Reg128Rel(const STATEMENT&);
 
 		void						Emit_Fp_Avx_Cmp_VarMemMem(const STATEMENT&);
 		void						Emit_Fp_Avx_Rsqrt_MemMem(const STATEMENT&);
@@ -797,6 +802,7 @@ namespace Jitter
 		CX86Assembler::XMMREGISTER	PrepareSymbolRegisterDefMd(CSymbol*, CX86Assembler::XMMREGISTER);
 		CX86Assembler::XMMREGISTER	PrepareSymbolRegisterUseMdAvx(CSymbol*, CX86Assembler::XMMREGISTER);
 		void						CommitSymbolRegisterMdAvx(CSymbol*, CX86Assembler::XMMREGISTER);
+		CX86Assembler::XMMREGISTER	PrepareSymbolRegisterDefFpu(CSymbol*, CX86Assembler::XMMREGISTER);
 		CX86Assembler::XMMREGISTER	PrepareSymbolRegisterUseFpuAvx(CSymbol*, CX86Assembler::XMMREGISTER);
 		void						CommitSymbolRegisterFpuAvx(CSymbol*, CX86Assembler::XMMREGISTER);
 
