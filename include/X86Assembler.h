@@ -559,7 +559,7 @@ private:
 	typedef std::vector<uint8> ByteArray;
 
 	void									WriteRexByte(bool, const CAddress&);
-	void									WriteRexByte(bool, const CAddress&, REGISTER&);
+	void									WriteRexByte(bool, const CAddress&, REGISTER&, bool = false);
 	void									WriteVex(VEX_OPCODE_MAP, XMMREGISTER&, XMMREGISTER, const CAddress&);
 	void									WriteEbOp_0F(uint8, uint8, const CAddress&);
 	void									WriteEbGbOp(uint8, bool, const CAddress&, REGISTER);
