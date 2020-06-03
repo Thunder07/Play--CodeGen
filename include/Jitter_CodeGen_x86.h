@@ -798,7 +798,7 @@ namespace Jitter
 		CX86Assembler::XMMREGISTER	PrepareSymbolRegisterUseMdAvx(CSymbol*, CX86Assembler::XMMREGISTER);
 		void						CommitSymbolRegisterMdAvx(CSymbol*, CX86Assembler::XMMREGISTER);
 		CX86Assembler::XMMREGISTER	PrepareSymbolRegisterUseFpuAvx(CSymbol*, CX86Assembler::XMMREGISTER);
-		void						CommitSymbolRegisterFpuAvx(CSymbol*, CAArch64Assembler::XMMREGISTER);
+		void						CommitSymbolRegisterFpuAvx(CSymbol*, CX86Assembler::XMMREGISTER);
 
 		virtual CX86Assembler::REGISTER PrepareRefSymbolRegisterUse(CSymbol*, CX86Assembler::REGISTER) = 0;
 
