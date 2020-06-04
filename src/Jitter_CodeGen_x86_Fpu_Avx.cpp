@@ -57,9 +57,6 @@ void CCodeGen_x86::Emit_Fpu_Avx_VarVarVar(const STATEMENT& statement)
 	auto src1 = statement.src1->GetSymbol().get();
 	auto src2 = statement.src2->GetSymbol().get();
 
-	// {StatementList list = {statement};
-	// DumpStatementList(list);}
-
 	auto dstRegister = PrepareSymbolRegisterDefFpu(dst, CX86Assembler::xMM0);
 	auto src1Register = PrepareSymbolRegisterUseFpuAvx(src1, CX86Assembler::xMM1);
 	auto src2Register = PrepareSymbolRegisterUseFpuAvx(src2, CX86Assembler::xMM2);
@@ -111,9 +108,6 @@ void CCodeGen_x86::Emit_Fp_Avx_Rsqrt_MemMem(const STATEMENT& statement)
 	auto dst = statement.dst->GetSymbol().get();
 	auto src1 = statement.src1->GetSymbol().get();
 
-	{StatementList list = {statement};
-	DumpStatementList(list);}
-
 	auto tmpIntRegister = CX86Assembler::rAX;
 	auto resultRegister = PrepareSymbolRegisterDefFpu(dst, CX86Assembler::xMM0);
 	auto sqrtRegister = PrepareSymbolRegisterUseFpuAvx(src1, CX86Assembler::xMM1);
@@ -129,9 +123,6 @@ void CCodeGen_x86::Emit_Fp_Avx_Rcpl_MemMem(const STATEMENT& statement)
 {
 	auto dst = statement.dst->GetSymbol().get();
 	auto src1 = statement.src1->GetSymbol().get();
-
-	{StatementList list = {statement};
-	DumpStatementList(list);}
 
 	auto tmpIntRegister = CX86Assembler::rAX;
 	auto resultRegister = PrepareSymbolRegisterDefFpu(dst, CX86Assembler::xMM0);
@@ -149,9 +140,6 @@ void CCodeGen_x86::Emit_Fp_Avx_Mov_RegSRelI32(const STATEMENT& statement)
 {
 	auto dst = statement.dst->GetSymbol().get();
 	auto src1 = statement.src1->GetSymbol().get();
-
-	{StatementList list = {statement};
-	DumpStatementList(list);}
 
 	assert(dst->m_type  == SYM_REGISTER128);
 	assert(src1->m_type == SYM_FP_REL_INT32);
@@ -231,10 +219,6 @@ void CCodeGen_x86::Emit_Fp_Avx_ToIntTrunc_RelRel(const STATEMENT& statement)
 	auto dst = statement.dst->GetSymbol().get();
 	auto src1 = statement.src1->GetSymbol().get();
 
-	// assert(dst->m_type  == SYM_FP_REL_SINGLE);
-	// assert(src1->m_type == SYM_FP_REL_SINGLE);
-		{StatementList list = {statement};
-	DumpStatementList(list);}
 	auto src1Reg = PrepareSymbolRegisterUseFpuAvx(src1, CX86Assembler::xMM1);
 
 	m_assembler.Vcvttss2siEd(CX86Assembler::rAX, CX86Assembler::MakeXmmRegisterAddress(src1Reg));
@@ -254,7 +238,6 @@ void CCodeGen_x86::Emit_Fp_Avx_ToIntTrunc_RelRel(const STATEMENT& statement)
 	}
 	else
 	{
-		fprintf(stderr, "EROROROR\n");
 		throw std::exception();
 	}
 	
