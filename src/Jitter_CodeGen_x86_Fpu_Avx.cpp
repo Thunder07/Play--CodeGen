@@ -223,16 +223,17 @@ void CCodeGen_x86::Emit_Fp_Avx_ToIntTrunc_RelRel(const STATEMENT& statement)
 
 	m_assembler.Vcvttss2siEd(CX86Assembler::rAX, CX86Assembler::MakeXmmRegisterAddress(src1Reg));
 	if(
-		dst->m_type == SYM_RELATIVE128 || dst->m_type == SYM_TEMPORARY128
-		|| dst->m_type == SYM_FP_REL_SINGLE || dst->m_type == SYM_FP_TMP_SINGLE
-		|| dst->m_type == SYM_REGISTER128
+		dst->m_type == SYM_REGISTER128
 	)
 	{
 		auto dstReg = PrepareSymbolRegisterDefFpu(dst, CX86Assembler::xMM0);
 		m_assembler.VmovdVo(dstReg, CX86Assembler::MakeRegisterAddress(CX86Assembler::rAX));
-		CommitSymbolRegisterFpuAvx(dst, dstReg);
 	}
-	else if(dst->m_type == SYM_RELATIVE || dst->m_type == SYM_TEMPORARY)
+	else if(
+		dst->m_type == SYM_RELATIVE || dst->m_type == SYM_TEMPORARY
+		|| dst->m_type == SYM_RELATIVE128 || dst->m_type == SYM_TEMPORARY128
+		|| dst->m_type == SYM_FP_REL_SINGLE || dst->m_type == SYM_FP_TMP_SINGLE
+	)
 	{
 		m_assembler.MovGd(CX86Assembler::MakeIndRegOffAddress(CX86Assembler::rBP, dst->m_valueLow), CX86Assembler::rAX);
 	}
