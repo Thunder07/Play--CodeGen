@@ -195,7 +195,7 @@ void CCodeGen_x86::Emit_Fp_Avx_Mov_Reg128Rel(const STATEMENT& statement)
 	auto src1Reg = PrepareSymbolRegisterUse(src1, CX86Assembler::rAX);
 
 	m_assembler.VmovdVo(dstRegister, CX86Assembler::MakeRegisterAddress(src1Reg));
-	m_assembler.VshufpsVo(dstRegister, dstRegister, CX86Assembler::MakeXmmRegisterAddress(dstRegister), 0x00);
+	// m_assembler.VshufpsVo(dstRegister, dstRegister, CX86Assembler::MakeXmmRegisterAddress(dstRegister), 0x00);
 }
 
 
